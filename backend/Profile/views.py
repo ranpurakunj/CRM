@@ -1,16 +1,7 @@
-from argparse import ArgumentDefaultsHelpFormatter
-from ast import arg
-from distutils.util import Mixin2to3
-from urllib import request
-from rest_framework import authentication,generics,mixins, permissions
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-from django.shortcuts import get_object_or_404
+from rest_framework import generics
 
 from api.mixins import StaffEditorPermissionMixin
-from api.authentication import TokenAuthentication
-from api.permissions import IsStaffEditorPermission
+
 from .models import Profile
 from .serializers import ProfileSerializer 
 
@@ -35,7 +26,6 @@ class ProfileListCreateAPIView(StaffEditorPermissionMixin, generics.ListCreateAP
         user= request.user
         if not user.is_authenticated:
             return Profile.objects.none()
-        print(request.user)
         return super().get_queryset(*args, **kwargs)
 profile_list_create_view = ProfileListCreateAPIView.as_view()
 
@@ -52,10 +42,10 @@ class ProfileUpdateAPIView(StaffEditorPermissionMixin, generics.UpdateAPIView):
 
     # def get_queryset(self):
     #     user=self.request.user
-    #     return user.accounts.all()
+    #     return user.objects.filter(pk=self.lookup_field)
 
     def perform_update(self, serializer):
-        serializer.save(self.request.user)  
+        serializer.save(user=self.request.user)  
          
 
 profile_update_view = ProfileUpdateAPIView.as_view()
