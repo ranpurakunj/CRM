@@ -3,7 +3,7 @@ from rest_framework.reverse import reverse
 
 from .models import Profile
 import re
-import phonenumbers
+
 
 def phone_validator(value):
     if value is None:
@@ -55,9 +55,15 @@ class ProfileSerializer(serializers.ModelSerializer):
             print("1",constraint1)
             print("2",constraint2)
             print("3",constraint3)
-            raise serializers.ValidationError(f"Please enter one of the following" 
+            raise serializers.ValidationError(f"Please enter one of the following:" 
             f"1. First and Last Name."
             f"2. Your email address."
             f"3. Your Phone number.")
+        if not data['first_name'].isalpha():
+            raise serializers.ValidationError(f"Please Enter valid First Name")
+        if not data['last_name'].isalpha():
+            raise serializers.ValidationError(f"Please Enter valid Last Name")
+        if not (all(idx.isdigit() for idx in data['zipcode'])):
+            raise serializers.ValidationError(f"Please Enter valid zipcode")
         return data
     
